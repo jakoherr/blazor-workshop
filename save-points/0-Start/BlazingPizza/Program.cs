@@ -30,7 +30,6 @@ using (var scope = scopeFactory.CreateScope())
 	}
 }
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

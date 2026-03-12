@@ -1,0 +1,52 @@
+﻿@page "/"
+@inject IRepository PizzaStore
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Blazing Pizzas</PageTitle>
+
+<div class="main">
+    <ul class="pizza-cards">
+        @if (specials is not null)
+        {
+            @foreach (var special in specials)
+            {
+                <li @onclick="@(() => ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
+                    <div class="pizza-info">
+                        <span class="title">@special.Name</span>
+                        @special.Description
+                        <span class="price">@special.GetFormattedBasePrice()</span>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+@if (showingConfigureDialog)
+{
+    <ConfigurePizzaDialog Pizza=configuringPizza></ConfigurePizzaDialog>
+}
+
+@code{
+    List<PizzaSpecial>? specials;
+    Pizza? configuringPizza;
+    bool showingConfigureDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        specials = await PizzaStore.GetSpecials();
+    }
+
+    void ShowConfigurePizzaDialog(PizzaSpecial special)
+    {
+        configuringPizza = new Pizza()
+        {
+            Special = special,
+            SpecialId = special.Id,
+            Size = Pizza.DefaultSize,
+            Toppings = new List<PizzaTopping>(),
+        };
+
+        showingConfigureDialog = true;
+    }
+}
